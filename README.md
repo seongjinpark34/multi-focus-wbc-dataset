@@ -1,24 +1,24 @@
 # A large multi-focus WBC dataset
 
-This repository demonstrates the process of generating images that were used in the annotation from the paper "A large multi-focus WBC dataset". 
+This repository demonstrates the generation process of multi-focal white blood cell images provided from the paper "A large multi-focus WBC dataset". 
 
 
 ## Running the script 
 
 ```
-python main.py
+python main.py  --test_dir ./examples/miLab_test
 ``` 
+This script will generate a same directory under ```./tidy_data``` that contains the cropped and concatenated images of white blood cells.
 
-
-Running ```main.py``` will demonstrate how the processing is done. 
-Every diagnosis test from miLab:tm: generates a folder with unique test name. 
-In the example, ```Example_TEST``` is provided to mock the directory that is generated from miLab:tm:.
-Example_TEST contains sample images  and 
+## Test input directory
+Every diagnosis test from miLab:tm: generates a folder with a unique test name. 
+Under the examples, ```miLab_test``` is provided to mock the directory that is generated from miLab:tm:.
+It contains a multiple stacks of focal planes for a sample FoV image and 
 ```anlayze_result.json``` from miLab:tm:. 
-```analyze_result.json``` is a mocked CSV file deserialized from serialized data obtained from miLab:tm:.
+Note that ```analyze_result.json``` is a metadata deserialized from serialized data obtained from miLab:tm:.
 
-## JSON file structure
-```analyze_result.json``` contains a dictionary structure as shown below.
+### JSON metadata in detail
+For example, ```analyze_result.json``` contains a dictionary structure as shown below.
 
 ```json
 {
@@ -26,7 +26,7 @@ Example_TEST contains sample images  and
     "img_name": "0001_12345_12345_001_12345.jpg", // img name
     "cell_prediction": 
         { "0": // cell_index
-            { "prediction": 5, // cell pre-classification from miLab. 0: rbc. 1: plt.
+            { "prediction": 5, // cell pre-classification index from miLab. 
             "location": [1374, 621, 117, 102], //cell bounding box prediction from miLab.
             "focus": 5}, // focused image stack number that is determined by miLab.  
           "1": ...
@@ -35,21 +35,22 @@ Example_TEST contains sample images  and
   },
   "1" : ...
 ```
-From each slide, almost 200~300 images are obtained to image WBCs. 
-For example, the first image that is obtained is given an index of 0 with a name starting with```0001_```. 
+In general, almost 200~300 images are obtained to image WBCs in each slide. 
+The first image that is obtained is given an index of 0 with a name starting with```0001_```. 
 The ```img_name``` that is in the JSON structure is the name of the image that was used by miLab:tm:.
 The image name contains, ```image number```, ```x coordinate```, ```y coordinate```, ```stack number```, and ```focus measure``` respectively.
 The ```focus measure``` is given by miLab:tm: using its internal algorithm.
-In ```cell_prediction```, there are cell indices that were identified from miLab:tm:. 
+In ```cell_prediction```, cell indices were identified from miLab:tm:. 
 Each cell has a pre-classification class. Class of 0 means the cell is a red blood cell, while 1 means the cell is a platelet. 
-Other than the two, it is considered that the cell is a white blood cell. 
+Other than the two, the cell is considered a subtype of white blood cells.
 
-## Crop cells and concatenation
-As the JSON file contains the cell information, it can be used to crop each z-stack images and concatenate horizontally.
-This image can be further used for the annotation.
+## Data generation process
+As the above file contains the cell information, it can be used to crop each z-stack image and concatenate horizontally. 
 
-![0.jpg](label%2FExample_TEST%2F0.jpg)
+See the ```process.py``` for the details.
 
-By default, the script generates ```./label``` directory, which then contains slide directories and image files of white blood cells in ascending orders. 
-```label.csv``` file contains corresponding labels ```crop_index```,```test_id```,```img_num```,```cell_location```.
-```label.csv``` is later used to trace back the original cells for generating the dataset. 
+## Data output
+By default, the script generates a directory under ```./tidy_data```, which then contains slide directories and image files of white blood cells in ascending orders. 
+```labels.csv``` file contains corresponding labels ```crop_index```,```test_id```,```img_num```,```cell_location```.
+```labels.csv``` is later used to trace back the original cells for generating the dataset. 
+While this multi-focal image had been used for the annotation, the open dataset was organized as the cropped one such as ```0_0```, ```0_1```, ..., ```0_9```.
