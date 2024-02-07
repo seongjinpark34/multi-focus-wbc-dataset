@@ -1,10 +1,11 @@
-import os
-from DataProcessorSingle import DataProcessorSingle
+import argparse
+from process import DataWangler
 
-def main():
-    print('hi')
 
 if __name__ == "__main__":
-    t = DataProcessorSingle('./Example_TEST')
-    # main()
-    t.process_for_label_images()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test_dir", type=str, help="test directory")
+
+    args = parser.parse_args()
+    t = DataWangler(args.test_dir)
+    t.process()
