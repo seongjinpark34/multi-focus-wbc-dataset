@@ -54,3 +54,5 @@ By default, the script generates a directory under ```./tidy_data```, which then
 ```labels.csv``` file contains corresponding labels ```crop_index```,```test_id```,```img_num```,```cell_location```.
 ```labels.csv``` is later used to trace back the original cells for generating the dataset. 
 While this multi-focal image had been used for the annotation, the open dataset was organized as the cropped one such as ```0_0```, ```0_1```, ..., ```0_9```.
+
+## Sample code for best focus
