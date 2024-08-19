@@ -43,7 +43,8 @@ In general, approximately 200\~300 unique WBCs are obtained from each slide. For
 
 The image name can be broken down in the following way:
 `wbcID_xCoordinate_yCoordinate_focusIndexNumber_focusScore.jpg`
-where, 
+where,
+
 - The first image containing one or more WBCs is given an ID of `0001`, and then increasing incrementally
 - The X and Y coordinates represent the location on the slide
 - The focusIndexNumber represents where in the focus stack the image is located. These go from `000` to `009`
@@ -70,10 +71,10 @@ The cropped images are organized in the same manner as in the open dataset, with
 
 ## Sample code for best focus
 
-After generating `./tidy_data` folder, it is possible to run `get_best_focus.py`, which demonstrates the best focus algorithm using Laplacian Operator in OpenCV.
+After generating `./tidy_data` folder, it is possible to run `get_best_focus_example.py`, which demonstrates the best focus algorithm using Laplacian Operator in OpenCV.
 
 ```
-python get_best_focus.py  --test_dir ./tidy_data --cell_idx 0
+python get_best_focus_example.py  --test_dir ./tidy_data --cell_idx 0
 ```
 
 This command prints the following output:
