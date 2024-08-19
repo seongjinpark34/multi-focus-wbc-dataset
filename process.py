@@ -25,11 +25,14 @@ class DataWangler:
     def process(self, output_dir="./tidy_data"):
         # returns target image stacked and corresponding pre-classification label.
         target_folder = os.path.join(output_dir, os.path.basename(self.test_dir))
+        annotation_folder = os.path.join(target_folder, "annotation")
         if not os.path.exists(target_folder):
             os.makedirs(target_folder)
+            os.mkdir(annotation_folder)
         else:
             shutil.rmtree(target_folder)
             os.makedirs(target_folder)
+            os.mkdir(annotation_folder)
         crop_index = 0
         target_img_nums = self._get_target_img_nums()
         label_info = []
@@ -42,10 +45,12 @@ class DataWangler:
                     .sort_values(by=["stack_num"], axis=0)["img_name"]
                     .to_list()
                 )
-                result_img = crop_and_concat(
+                result_img, cropped_imgs = crop_and_concat(
                     target_img_list, crop_bbox, self.crop_size, self.img_size
                 )
-                result_img.save(os.path.join(target_folder, f"{crop_index}.jpg"))
+                for f_id, c_im in enumerate(cropped_imgs):
+                    c_im.save(os.path.join(target_folder,f"{crop_index}_{f_id}.jpg"))
+                result_img.save(os.path.join(annotation_folder, f"{crop_index}.jpg"))
                 temp_info = [
                     crop_index,
                     os.path.basename(self.test_dir),
@@ -132,13 +137,16 @@ def crop_and_concat(img_list, crop_location, size=200, max_size=[1920, 1200]):
     new_width = len(img_list) * size
     new_height = size
     concatenated_img = Image.new("RGB", (new_width, new_height))
+    cropped_img = []
     x_offset = 0
 
     crop_coord = get_crop_coord(crop_location, size, max_size)
     for img in img_list:
-        concatenated_img.paste(img.crop(crop_coord), (x_offset, 0))
+        c_im = img.crop(crop_coord)
+        cropped_img.append(c_im)
+        concatenated_img.paste(c_im, (x_offset, 0))
         x_offset += size
-    return concatenated_img
+    return concatenated_img, cropped_img
 
 
 def get_crop_coord(pos_cord, size=200, max_size=[1920, 1200]):
